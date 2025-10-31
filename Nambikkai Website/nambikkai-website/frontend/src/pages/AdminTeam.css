@@ -1,0 +1,179 @@
+.admin-team {
+  display: grid;
+  gap: 2rem;
+}
+
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.team-header h2 {
+  font-size: 1.5rem;
+  color: #1f2937;
+  margin: 0;
+}
+
+.member-form {
+  background: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.member-form h3 {
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.members-table {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+}
+
+.members-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.members-table thead {
+  background: #f3f4f6;
+}
+
+.members-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.members-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.permissions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.permissions span {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  background: #f0fdf4;
+  color: #15803d;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status.active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.btn-remove {
+  padding: 0.5rem 1rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-remove:hover {
+  background: #fca5a5;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+@media (max-width: 1024px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .members-table {
+    font-size: 0.9rem;
+  }
+
+  .members-table th,
+  .members-table td {
+    padding: 0.75rem;
+  }
+
+  .permissions {
+    flex-direction: column;
+  }
+}
