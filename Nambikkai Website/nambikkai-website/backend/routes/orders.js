@@ -10,16 +10,16 @@ router.post('/checkout', authMiddleware, async (req, res) => {
   try {
     const { shippingAddress, paymentMethod } = req.body;
 
-    const cart = await Cart.findOne({ userId: req.user.userId }).populate('items.productId');
+    const cart = await Cart.findOne({ userId: req.user.id }).populate('items.productId');
 
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: 'Cart is empty' });
     }
 
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.user.id);
 
     const order = new Order({
-      userId: req.user.userId,
+      userId: req.user.id,
       items: cart.items.map(item => ({
         productId: item.productId._id,
         productName: item.productId.name,
@@ -52,7 +52,7 @@ router.post('/checkout', authMiddleware, async (req, res) => {
 // Get user orders
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const orders = await Order.find({ userId: req.user.userId })
+    const orders = await Order.find({ userId: req.user.id })
       .sort({ createdAt: -1 });
 
     res.json(orders);
@@ -71,7 +71,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    if (order.userId.toString() !== req.user.userId) {
+    if (order.userId.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to view this order' });
     }
 
@@ -82,3 +82,4 @@ router.get('/:id', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+

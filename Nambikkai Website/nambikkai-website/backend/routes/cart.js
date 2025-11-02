@@ -7,11 +7,11 @@ const router = express.Router();
 // Get cart
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    let cart = await Cart.findOne({ userId: req.user.userId })
+    let cart = await Cart.findOne({ userId: req.user.id })
       .populate('items.productId');
 
     if (!cart) {
-      cart = new Cart({ userId: req.user.userId, items: [] });
+      cart = new Cart({ userId: req.user.id, items: [] });
       await cart.save();
     } else {
       // Filter out items with null productId (products that were deleted)
@@ -46,10 +46,10 @@ router.post('/add', authMiddleware, async (req, res) => {
       return res.status(400).json({ message: 'Insufficient stock' });
     }
 
-    let cart = await Cart.findOne({ userId: req.user.userId });
+    let cart = await Cart.findOne({ userId: req.user.id });
 
     if (!cart) {
-      cart = new Cart({ userId: req.user.userId, items: [] });
+      cart = new Cart({ userId: req.user.id, items: [] });
     }
 
     const existingItem = cart.items.find(item => item.productId.toString() === productId);
@@ -89,7 +89,7 @@ router.post('/remove', authMiddleware, async (req, res) => {
   try {
     const { productId } = req.body;
 
-    let cart = await Cart.findOne({ userId: req.user.userId });
+    let cart = await Cart.findOne({ userId: req.user.id });
 
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
@@ -131,7 +131,7 @@ router.post('/update-quantity', authMiddleware, async (req, res) => {
       return res.status(400).json({ message: 'Insufficient stock' });
     }
 
-    let cart = await Cart.findOne({ userId: req.user.userId });
+    let cart = await Cart.findOne({ userId: req.user.id });
 
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
@@ -168,7 +168,7 @@ router.post('/update-quantity', authMiddleware, async (req, res) => {
 // Clear cart
 router.post('/clear', authMiddleware, async (req, res) => {
   try {
-    let cart = await Cart.findOne({ userId: req.user.userId });
+    let cart = await Cart.findOne({ userId: req.user.id });
 
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
@@ -189,3 +189,4 @@ router.post('/clear', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+

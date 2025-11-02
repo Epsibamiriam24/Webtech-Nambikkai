@@ -9,8 +9,13 @@ const api = axios.create({
   }
 });
 
-// Add token to requests
+// Add token to requests and debug logging
 api.interceptors.request.use((config) => {
+  console.log('API Request:', {
+    url: config.url,
+    method: config.method,
+    data: config.data
+  });
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -18,11 +23,36 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Add response interceptor for debugging
+api.interceptors.response.use(
+  (response) => {
+    console.log('API Response:', {
+      url: response.config.url,
+      status: response.status,
+      data: response.data
+    });
+    return response;
+  },
+  (error) => {
+    console.error('API Error:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message
+    });
+    return Promise.reject(error);
+  }
+);
+
 // Auth APIs
 export const authAPI = {
   signup: (data) => api.post('/auth/signup', data),
   login: (data) => api.post('/auth/login', data),
   loginOrSignup: (data) => api.post('/auth/login-or-signup', data)
+};
+
+// Admin Auth APIs
+export const adminAuthAPI = {
+  login: (data) => api.post('/admin/auth/login', data)
 };
 
 // Product APIs

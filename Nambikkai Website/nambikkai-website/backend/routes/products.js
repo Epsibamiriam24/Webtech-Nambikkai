@@ -74,7 +74,7 @@ router.post('/', authMiddleware, adminMiddleware, upload.single('image'), [
     const imagePath = req.file ? req.file.path : null;
 
     console.log('Creating product with data:', {
-      name, description, price, category, stock, sku: generatedSku, image: imagePath, createdBy: req.user.userId
+      name, description, price, category, stock, sku: generatedSku, image: imagePath, createdBy: req.user.id
     });
 
     const product = new Product({
@@ -85,7 +85,7 @@ router.post('/', authMiddleware, adminMiddleware, upload.single('image'), [
       stock,
       sku: generatedSku,
       image: imagePath,
-      createdBy: req.user.userId,
+      createdBy: req.user.id,
       rating: 0
     });
 
@@ -112,7 +112,7 @@ router.put('/:id', authMiddleware, adminMiddleware, upload.single('image'), asyn
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    if (product.createdBy.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (product.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this product' });
     }
 
@@ -148,7 +148,7 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    if (product.createdBy.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (product.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to delete this product' });
     }
 
@@ -179,7 +179,7 @@ router.post('/:id/reviews', authMiddleware, [
     const { rating, text } = req.body;
 
     const review = {
-      userId: req.user.userId,
+      userId: req.user.id,
       userName: req.user.email,
       text,
       rating

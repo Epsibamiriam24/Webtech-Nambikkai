@@ -8,9 +8,23 @@ dotenv.config();
 
 const app = express();
 
-// CORS Configuration
+// CORS Configuration - Allow multiple origins for development
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all origins in development
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -21,29 +35,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
-// MongoDB Connection with enhanced options
+// MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 30000, // 30 seconds
-  socketTimeoutMS: 45000, // 45 seconds
-  connectTimeoutMS: 30000, // 30 seconds
-  heartbeatFrequencyMS: 2000, // 2 seconds
-  retryWrites: true,
-  w: 'majority',
-  minPoolSize: 1,
-  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 45000,
+  connectTimeoutMS: 30000
 }).then(() => {
   console.log('MongoDB connected successfully');
 }).catch(err => {
   console.error('MongoDB connection error:', err);
-  // Log more detailed error information
   if (err.reason && err.reason.servers) {
     console.log('\nServer connection details:');
     err.reason.servers.forEach((desc, host) => {
       console.log(`- ${host}: ${desc.type}`);
     });
   }
+  process.exit(1);
 });
 
 // Routes
@@ -52,6 +61,7 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/cart', require('./routes/cart'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/admin/auth', require('./routes/admin-auth'));
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -64,8 +74,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!', error: err.message });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please try a different port or close the application using this port.`);
+  } else {
+    console.error('Error starting server:', err);
+  }
+  process.exit(1);
 });

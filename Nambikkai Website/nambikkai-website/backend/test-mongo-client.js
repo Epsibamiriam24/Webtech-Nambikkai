@@ -36,3 +36,5 @@ async function run() {
 }
 
 run().catch((e) => console.error('Unexpected error:', e));
+
+REACT_APP_API_URL=http://localhost:5000/api

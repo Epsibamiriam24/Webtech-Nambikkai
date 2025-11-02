@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authAPI } from '../api/axios';
+import { adminAuthAPI } from '../api/axios';
 import '../components/Auth.css';
 
 const AdminLogin = ({ onLogin }) => {
@@ -20,19 +20,23 @@ const AdminLogin = ({ onLogin }) => {
     setError('');
 
     try {
-      const response = await authAPI.login(formData);
-
-      // Check if user is admin
-      if (response.data.user.role !== 'admin') {
-        setError('Access denied. Admin privileges required.');
-        return;
-      }
-
+      console.log('Attempting admin login with:', formData);
+      const response = await adminAuthAPI.login(formData);
+      console.log('Login response:', response.data);
+      
+      // Ensure admin role is set
+      const adminData = {
+        ...response.data.admin,
+        role: 'admin'
+      };
+      console.log('Admin data being set:', adminData);
+      
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      onLogin(response.data.user);
+      localStorage.setItem('user', JSON.stringify(adminData));
+      onLogin(adminData);
+      console.log('Login successful, navigating to /admin');
       alert('Admin login successful!');
-      navigate('/admin/dashboard');
+      navigate('/admin');
     } catch (err) {
       setError(err.response?.data?.message || 'Admin login failed');
     } finally {

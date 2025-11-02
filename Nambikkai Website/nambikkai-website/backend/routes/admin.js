@@ -54,7 +54,7 @@ router.post('/members/add', authMiddleware, adminMiddleware, async (req, res) =>
     }
 
     const adminMember = new AdminMember({
-      adminId: req.user.userId,
+      adminId: req.user.id,
       memberId: member._id,
       role: role || 'editor',
       permissions: {
@@ -80,7 +80,7 @@ router.post('/members/add', authMiddleware, adminMiddleware, async (req, res) =>
 // Get team members
 router.get('/members', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const members = await AdminMember.find({ adminId: req.user.userId })
+    const members = await AdminMember.find({ adminId: req.user.id })
       .populate('memberId', 'name email phone')
       .sort({ createdAt: -1 });
 
@@ -101,7 +101,7 @@ router.put('/members/:id', authMiddleware, adminMiddleware, async (req, res) => 
       return res.status(404).json({ message: 'Team member not found' });
     }
 
-    if (adminMember.adminId.toString() !== req.user.userId) {
+    if (adminMember.adminId.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
@@ -134,7 +134,7 @@ router.delete('/members/:id', authMiddleware, adminMiddleware, async (req, res) 
       return res.status(404).json({ message: 'Team member not found' });
     }
 
-    if (adminMember.adminId.toString() !== req.user.userId) {
+    if (adminMember.adminId.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
@@ -185,3 +185,4 @@ router.put('/orders/:id/status', authMiddleware, adminMiddleware, async (req, re
 });
 
 module.exports = router;
+

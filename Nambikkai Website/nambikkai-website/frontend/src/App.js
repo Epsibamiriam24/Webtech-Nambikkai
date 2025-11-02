@@ -40,34 +40,37 @@ function App() {
     return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', fontSize: '1.2rem', color: '#6b7280' }}>Loading...</div>;
   }
 
-  if (!user) {
-    return (
-      <BrowserRouter>
-        <Navbar user={user} onLogout={handleLogout} />
-        <Routes>
-          <Route path="/" element={<Login onLogin={handleLogin} />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
-          <Route path="/admin/login" element={<AdminLogin onLogin={handleLogin} />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </BrowserRouter>
-    );
-  }
-
   return (
     <BrowserRouter>
       <Navbar user={user} onLogout={handleLogout} />
       <Routes>
-        <Route path="/" element={<Home user={user} />} />
-        <Route path="/products" element={<Products user={user} />} />
-        <Route path="/product/:id" element={<ProductDetail user={user} />} />
-        <Route path="/cart" element={<Cart user={user} />} />
-        <Route path="/orders" element={<Orders user={user} />} />
+        {/* Public Routes */}
+        <Route path="/login" element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} />
+        <Route path="/signup" element={!user ? <Signup onLogin={handleLogin} /> : <Navigate to="/" />} />
+        <Route path="/admin/login" element={!user ? <AdminLogin onLogin={handleLogin} /> : <Navigate to="/admin" />} />
+
+        {/* Protected Routes */}
+        <Route path="/" element={user ? <Home user={user} /> : <Login onLogin={handleLogin} />} />
+        <Route path="/products" element={user ? <Products user={user} /> : <Navigate to="/login" />} />
+        <Route path="/product/:id" element={user ? <ProductDetail user={user} /> : <Navigate to="/login" />} />
+        <Route path="/cart" element={user ? <Cart user={user} /> : <Navigate to="/login" />} />
+        <Route path="/orders" element={user ? <Orders user={user} /> : <Navigate to="/login" />} />
+        
+        {/* Admin Routes */}
         <Route
           path="/admin/*"
-          element={user?.role === 'admin' ? <AdminDashboard user={user} /> : <Navigate to="/" />}
+          element={
+            user?.role === 'admin' ? (
+              <AdminDashboard user={user} />
+            ) : user ? (
+              <Navigate to="/admin/login" />
+            ) : (
+              <Navigate to="/admin/login" />
+            )
+          }
         />
+        
+        {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
       <Footer />
