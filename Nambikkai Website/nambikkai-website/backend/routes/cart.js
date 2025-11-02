@@ -13,6 +13,17 @@ router.get('/', authMiddleware, async (req, res) => {
     if (!cart) {
       cart = new Cart({ userId: req.user.userId, items: [] });
       await cart.save();
+    } else {
+      // Filter out items with null productId (products that were deleted)
+      cart.items = cart.items.filter(item => item.productId !== null);
+
+      // Recalculate total price
+      cart.totalPrice = cart.items.reduce((total, item) => {
+        return total + (item.productId.price * item.quantity);
+      }, 0);
+
+      // Save the cleaned cart
+      await cart.save();
     }
 
     res.json(cart);

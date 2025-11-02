@@ -112,11 +112,11 @@ const Cart = ({ user }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {cart.items.map(item => (
+                  {cart.items.filter(item => item.productId).map(item => (
                     <tr key={item.productId._id}>
                       <td>
                         <div className="product-cell">
-                          <img src={`http://localhost:5000/${item.productId.image}`} alt={item.productId.name} />
+                          <img src={`http://localhost:5005/${item.productId.image}`} alt={item.productId.name} />
                           <div>
                             <h4>{item.productId.name}</h4>
                             <p>{item.productId.category}</p>

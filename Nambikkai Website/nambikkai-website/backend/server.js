@@ -8,20 +8,42 @@ dotenv.config();
 
 const app = express();
 
+// CORS Configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
-// MongoDB Connection
+// MongoDB Connection with enhanced options
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000, // 30 seconds
+  socketTimeoutMS: 45000, // 45 seconds
+  connectTimeoutMS: 30000, // 30 seconds
+  heartbeatFrequencyMS: 2000, // 2 seconds
+  retryWrites: true,
+  w: 'majority',
+  minPoolSize: 1,
+  maxPoolSize: 10,
 }).then(() => {
   console.log('MongoDB connected successfully');
 }).catch(err => {
-  console.log('MongoDB connection error:', err);
+  console.error('MongoDB connection error:', err);
+  // Log more detailed error information
+  if (err.reason && err.reason.servers) {
+    console.log('\nServer connection details:');
+    err.reason.servers.forEach((desc, host) => {
+      console.log(`- ${host}: ${desc.type}`);
+    });
+  }
 });
 
 // Routes
